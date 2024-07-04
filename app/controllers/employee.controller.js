@@ -27,11 +27,11 @@ exports.updateEmployee = async (req, res) => {
         const newEmployee = new Employee(req.body)
         const employeeId = req.query.id
         if (!employeeId) {
-            res.status(404).json({ data: null, error: "in correct format" })
+            res.status(400).json({ data: null, error: "in correct format" })
             return
         }
-        if (typeof employeeId != number) {
-            res.status(404).json({ data: null, error: "in correct format" })
+        if (typeof employeeId != 'number') {
+            res.status(400).json({ data: null, error: "in correct format" })
             return
         }
 
@@ -51,11 +51,11 @@ exports.deleteEmployee = async (req, res) => {
     try {
         const employeeId = req.query.id
         if (!employeeId) {
-            res.status(404).json({ data: null, error: "in correct format" })
+            res.status(400).json({ data: null, error: "in correct format" })
             return
         }
-        if (typeof employeeId != number) {
-            res.status(404).json({ data: null, error: "in correct format" })
+        if (typeof employeeId != 'number') {
+            res.status(400).json({ data: null, error: "in correct format" })
             return
         }
         const response = await Employee.deleteEmployeeById(employeeId)
@@ -94,19 +94,19 @@ exports.fetchEmployeeByCategory = async (req, res) => {
     console.log(category, value)
     const categories = ["employee_id", "first_name", "last_name", "department", "salary"]
     if (!categories.includes(category)) {
-        res.status(404).json({ data: null, error: "no such category exists" })
+        res.status(400).json({ data: null, error: "no such category exists" })
         return
     }
     if (category === "employee_id") {
         if (typeof value != 'number') {
-            res.status(404).json({ data: null, error: "not a correct format" })
+            res.status(400).json({ data: null, error: "not a correct format" })
             // res.status(404).send("not a correct format")
             return
         }
 
     } else {
         if ((typeof value === 'number' && value)) {
-            res.status(404).json({ data: null, error: "not a correct format" })
+            res.status(400).json({ data: null, error: "not a correct format" })
 
             return
         }
