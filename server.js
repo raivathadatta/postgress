@@ -15,7 +15,7 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
     console.log("hello")
-    res.send("hello you are connected to employee serer")
+    res.send("hello you are connected to employee server")
 })
 require("./app/routes/employee.routs.js")(app)
 
