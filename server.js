@@ -3,8 +3,6 @@ const cors  = require('cors')
 const app = express();
 const PORT = 3032
 
-// const pool = require('./app/models/db.js');
-const { createEmployee } = require('./app/controllers/employee.controller.js');
 
 app.use(express.json());
 

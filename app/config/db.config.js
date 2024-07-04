@@ -4,7 +4,7 @@ const dataBaseConfiguration  = {
     host: 'localhost',
     database: 'postgres',
     password: '4123',
-    port: 5432, // Default PostgreSQL port
+    port: 5432, 
 }
 
 module.exports =  dataBaseConfiguration 
