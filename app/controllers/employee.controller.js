@@ -1,4 +1,5 @@
 
+const { error } = require("console")
 const Employee = require("../models/employees.model")
 exports.createEmployee = async (req, res) => {
 
@@ -31,7 +32,9 @@ exports.updateEmployee = async (req, res) => {
             res.status(400).json({ data: null, error: "in correct format" })
             return
         }
-        console.log(typeof employeeId)
+        if (!parseInt(employeeId)) {
+            res.status(400).json({ data: null, error: "incorrect format of employeeId" })
+        }
 
         const response = await Employee.upDateEmployeeByEmployeeId(employeeId, Object.values(newEmployee))
         if (response.rows.length < 1) {
@@ -51,6 +54,9 @@ exports.deleteEmployee = async (req, res) => {
         if (!employeeId) {
             res.status(400).json({ data: null, error: "in correct format" })
             return
+        }
+        if (!parseInt(employeeId)) {
+            res.status(400).json({ data: null, error: "incorrect format of employeeId" })
         }
         const response = await Employee.deleteEmployeeById(employeeId)
         if (response.rows.length < 1) {
@@ -86,25 +92,26 @@ exports.fetchEmployeeByCategory = async (req, res) => {
     const { category, value } = req.query
     console.log(req.query)
     console.log(category, value)
-    const categories = ["employee_id", "first_name", "last_name", "department", "salary"]
-    if (!categories.includes(category)) {
-        res.status(400).json({ data: null, error: "no such category exists" })
-        return
-    }
-    if (category === "employee_id") {
-        if (typeof value != 'number') {
-            res.status(400).json({ data: null, error: "not a correct format" })
-            return
-        }
-
-    } else {
-        if ((typeof value === 'number' && value)) {
-            res.status(400).json({ data: null, error: "not a correct format" })
-
-            return
-        }
-    }
     try {
+        const categories = ["employee_id", "first_name", "last_name", "department", "salary"]
+        if (!categories.includes(category)) {
+            res.status(400).json({ data: null, error: "no such category exists" })
+            return
+        }
+        if (category === "employee_id") {
+            if (typeof Number(value) != 'number') {
+                res.status(400).json({ data: null, error: "not a correct format" })
+                return
+            }
+
+        } else {
+            if ((typeof value === 'number' && value)) {
+                res.status(400).json({ data: null, error: "not a correct format" })
+
+                return
+            }
+        }
+
         const response = await Employee.fetchEmployeesByCategory(category, [value])
         if (response.rows.length < 1) {
             res.status(404).json({ data: [], error: "no data found" })

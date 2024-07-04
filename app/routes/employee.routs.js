@@ -6,6 +6,6 @@ module.exports = (app) => {
     router.delete('/', employee.deleteEmployee)
     router.get('/', employee.getALLEmployees)
     router.get('/fetch',employee.fetchEmployeeByCategory)
-    router.get('/fetch/api',employee.updateEmployee)
+    router.get('/update',employee.updateEmployee)
     app.use('/api/employee', router)
 }
