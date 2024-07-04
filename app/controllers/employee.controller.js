@@ -2,7 +2,7 @@
 const Employee = require("../models/employees.model")
 exports.createEmployee = async (req, res) => {
 
-    if (!(req.body[first_name] && req.body[last_name] && req.body[department] && req.body[salary])) {
+    if (!(req.body["first_name"] && req.body["last_name"] && req.body["department"] && req.body["salary"])) {
         res.status(400).json({ data: null, error: "in correct data some data is missing " })
         return
     }
@@ -19,7 +19,8 @@ exports.createEmployee = async (req, res) => {
 }
 
 exports.updateEmployee = async (req, res) => {
-    if (!(req.body[first_name] && req.body[last_name] && req.body[department] && req.body[salary])) {
+    console.log(req.body)
+    if (!(req.body["first_name"] && req.body["last_name"] && req.body["department"] && req.body["salary"])) {
         res.status(400).json({ data: null, error: "in correct data some data is missing " })
         return
     }
@@ -30,17 +31,14 @@ exports.updateEmployee = async (req, res) => {
             res.status(400).json({ data: null, error: "in correct format" })
             return
         }
-        if (typeof employeeId != 'number') {
-            res.status(400).json({ data: null, error: "in correct format" })
-            return
-        }
+        console.log(typeof employeeId)
 
         const response = await Employee.upDateEmployeeByEmployeeId(employeeId, Object.values(newEmployee))
         if (response.rows.length < 1) {
             res.status(404).json({ data: [], error: "no data found" })
             return
         }
-        res.status(205).json({ data: response.rows, error: null })
+        res.status(200).json({ data: response.rows, error: null })
     } catch (e) {
         res.status(505).json({ data: null, error: e.message })
     }
@@ -51,10 +49,6 @@ exports.deleteEmployee = async (req, res) => {
     try {
         const employeeId = req.query.id
         if (!employeeId) {
-            res.status(400).json({ data: null, error: "in correct format" })
-            return
-        }
-        if (typeof employeeId != 'number') {
             res.status(400).json({ data: null, error: "in correct format" })
             return
         }
@@ -100,7 +94,6 @@ exports.fetchEmployeeByCategory = async (req, res) => {
     if (category === "employee_id") {
         if (typeof value != 'number') {
             res.status(400).json({ data: null, error: "not a correct format" })
-            // res.status(404).send("not a correct format")
             return
         }
 
@@ -114,7 +107,6 @@ exports.fetchEmployeeByCategory = async (req, res) => {
     try {
         const response = await Employee.fetchEmployeesByCategory(category, [value])
         if (response.rows.length < 1) {
-            // res.status(404).send("no data found")
             res.status(404).json({ data: [], error: "no data found" })
 
             return

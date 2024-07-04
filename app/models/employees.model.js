@@ -53,7 +53,7 @@ Employee.getAllEmployees = async function () {
     }
 }
 Employee.fetchEmployeesByCategory = async function (category, values) {
-    // console.log(category, values)
+
     try {
         const text = `select * from  employees where ${category} = $1`
         const response = await pool.query(text, values)
