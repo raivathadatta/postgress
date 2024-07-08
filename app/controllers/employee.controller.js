@@ -4,16 +4,11 @@ const db = require("../models")
 require("dotenv").config();
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY
-// dotenv.config();
 exports.login = async (req, res) => {
-
     console.log("login in")
     const token = jwt.sign({ userId: "global" }, secretKey, { expiresIn: '1h' });
     console.log(token)
     res.json({ token });
-
-
-
 }
 
 exports.createEmployee = async (req, res) => {
@@ -42,7 +37,6 @@ exports.updateEmployee = async (req, res) => {
         return
     }
     try {
-        // const newEmployee = new Employee(req.body)
         const employeeId = req.query.id
         if (!employeeId) {
             res.status(400).json({ data: null, error: "in correct format" })
@@ -52,8 +46,7 @@ exports.updateEmployee = async (req, res) => {
             res.status(400).json({ data: null, error: "incorrect format of employeeId" })
         }
         const response = await db.employees.update(req.body, { where: { id: employeeId } })
-        // const response = await Employee.upDateEmployeeByEmployeeId(employeeId, Object.values(newEmployee))
-        if (Object.keys(response).length < 1) {
+         if (Object.keys(response).length < 1) {
             res.status(404).json({ data: [], error: "no data found" })
             return
         }

@@ -4,8 +4,6 @@ const employee = require("../controllers/employee.controller")
 
 module.exports = (app, authenticateJWT) => {
     var router = require("express").Router();
-    // router.post('/login',employee.login)
-
 
     router.post('/login', employee.login)
     router.post('/', authenticateJWT, employee.createEmployee);
@@ -16,5 +14,3 @@ module.exports = (app, authenticateJWT) => {
     router.get('/update', authenticateJWT, employee.updateEmployee)
     app.use('/api/employee', router)
 }
-
-// process.env.
