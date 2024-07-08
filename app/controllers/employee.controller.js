@@ -1,19 +1,35 @@
 
-const { error } = require("console")
-const Employee = require("../models/employees.model")
+const db = require("../models")
+
+require("dotenv").config();
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.SECRET_KEY
+// dotenv.config();
+exports.login = async (req, res) => {
+
+    console.log("login in")
+    const token = jwt.sign({ userId: "global" }, secretKey, { expiresIn: '1h' });
+    console.log(token)
+    res.json({ token });
+
+
+
+}
+
 exports.createEmployee = async (req, res) => {
 
     if (!(req.body["first_name"] && req.body["last_name"] && req.body["department"] && req.body["salary"])) {
         res.status(400).json({ data: null, error: "in correct data some data is missing " })
         return
     }
-    const newEmployee = new Employee(req.body)
-    console.log(newEmployee, "new employee")
+    if (!parseInt(req.body["salary"])) {
+        res.status(400).json({ data: null, error: "incorrect format of salary" })
+    }
 
     try {
-        const response = await Employee.createNewEmployee(Object.values(newEmployee))
-
-        res.status(202).json({ data: response.rows, error: null })
+        const response = await db.employees.create(req.body)
+        console.log(response, "data added successfully ", req.body)
+        res.status(202).json({ data: response, error: null })
     } catch (e) {
         res.status(505).send(e.message)
     }
@@ -26,7 +42,7 @@ exports.updateEmployee = async (req, res) => {
         return
     }
     try {
-        const newEmployee = new Employee(req.body)
+        // const newEmployee = new Employee(req.body)
         const employeeId = req.query.id
         if (!employeeId) {
             res.status(400).json({ data: null, error: "in correct format" })
@@ -35,13 +51,13 @@ exports.updateEmployee = async (req, res) => {
         if (!parseInt(employeeId)) {
             res.status(400).json({ data: null, error: "incorrect format of employeeId" })
         }
-
-        const response = await Employee.upDateEmployeeByEmployeeId(employeeId, Object.values(newEmployee))
-        if (response.rows.length < 1) {
+        const response = await db.employees.update(req.body, { where: { id: employeeId } })
+        // const response = await Employee.upDateEmployeeByEmployeeId(employeeId, Object.values(newEmployee))
+        if (Object.keys(response).length < 1) {
             res.status(404).json({ data: [], error: "no data found" })
             return
         }
-        res.status(200).json({ data: response.rows, error: null })
+        res.status(200).json({ data: response, error: null })
     } catch (e) {
         res.status(505).json({ data: null, error: e.message })
     }
@@ -49,6 +65,7 @@ exports.updateEmployee = async (req, res) => {
 }
 
 exports.deleteEmployee = async (req, res) => {
+    console.log("delete is called")
     try {
         const employeeId = req.query.id
         if (!employeeId) {
@@ -58,13 +75,13 @@ exports.deleteEmployee = async (req, res) => {
         if (!parseInt(employeeId)) {
             res.status(400).json({ data: null, error: "incorrect format of employeeId" })
         }
-        const response = await Employee.deleteEmployeeById(employeeId)
-        if (response.rows.length < 1) {
+        const response = await db.employees.destroy({ where: { id: employeeId } })
+        if (Object.keys(response).length < 1) {
             res.status(404).json({ data: [], error: "no data found" })
             return
         }
         console.log(response)
-        res.status(200).json({ data: response, error: null })
+        res.status(204).json({ data: response, error: null })
     } catch (e) {
         res.status(505).json({ data: null, error: e.message })
     }
@@ -72,13 +89,15 @@ exports.deleteEmployee = async (req, res) => {
 }
 exports.getALLEmployees = async (req, res) => {
     try {
+        console.log("find all is called")
 
-        const response = await Employee.getAllEmployees()
-        if (response.rows.length < 1) {
-            res.status(404).json({ data: [], error: "no data found" })
+        const response = await db.employees.findAll({ raw: true })
+        console.log(response)
+        if (response.length < 1) {
+            res.status(404).json({ data: [], error: "No data found" })
             return
         }
-        res.status(200).json({ data: response.rows, error: null })
+        res.status(200).json({ data: response, error: null })
     } catch (e) {
         res.status(505).json({ data: null, error: e.message })
 
@@ -89,11 +108,12 @@ exports.getALLEmployees = async (req, res) => {
 
 
 exports.fetchEmployeeByCategory = async (req, res) => {
+    console.log("called fetch employee by category")
     const { category, value } = req.query
     console.log(req.query)
     console.log(category, value)
     try {
-        const categories = ["employee_id", "first_name", "last_name", "department", "salary"]
+        const categories = ["id", "first_name", "last_name", "department", "salary"]
         if (!categories.includes(category)) {
             res.status(400).json({ data: null, error: "no such category exists" })
             return
@@ -112,13 +132,18 @@ exports.fetchEmployeeByCategory = async (req, res) => {
             }
         }
 
-        const response = await Employee.fetchEmployeesByCategory(category, [value])
-        if (response.rows.length < 1) {
+        const response = await db.employees.findAll({
+            raw: true,
+            where: {
+                [category]: value
+            }
+        })
+        if (response.length < 1) {
             res.status(404).json({ data: [], error: "no data found" })
 
             return
         }
-        res.status(202).json({ data: response.rows, error: null })
+        res.status(202).json({ data: response, error: null })
 
     } catch (err) {
         console.log(err)
@@ -127,4 +152,5 @@ exports.fetchEmployeeByCategory = async (req, res) => {
 
 }
 
-/// send data as form of json 
+
+

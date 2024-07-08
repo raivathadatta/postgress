@@ -1,11 +1,20 @@
+
+
 const employee = require("../controllers/employee.controller")
-module.exports = (app) => {
+
+module.exports = (app, authenticateJWT) => {
     var router = require("express").Router();
-    router.post('/', employee.createEmployee);
-    router.put('/', employee.updateEmployee)
-    router.delete('/', employee.deleteEmployee)
-    router.get('/', employee.getALLEmployees)
-    router.get('/fetch',employee.fetchEmployeeByCategory)
-    router.get('/update',employee.updateEmployee)
+    // router.post('/login',employee.login)
+
+
+    router.post('/login', employee.login)
+    router.post('/', authenticateJWT, employee.createEmployee);
+    router.put('/', authenticateJWT, employee.updateEmployee)
+    router.delete('/', authenticateJWT, employee.deleteEmployee)
+    router.get('/', authenticateJWT, employee.getALLEmployees)
+    router.get('/fetch', authenticateJWT, employee.fetchEmployeeByCategory)
+    router.get('/update', authenticateJWT, employee.updateEmployee)
     app.use('/api/employee', router)
 }
+
+// process.env.
